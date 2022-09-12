@@ -1,0 +1,11 @@
+.container{
+    background-color: #0000ff;
+    /* padding: auto; */
+    border-radius: 2rem;
+}
+.dp{
+    padding:1rem;
+    color: white;
+    font-family: 'consolas', monospace;
+    margin: 0 auto;
+}

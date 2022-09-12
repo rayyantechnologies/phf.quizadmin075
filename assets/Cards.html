@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;800&display=swap" rel="stylesheet">
+    <title>Rayyantech Cards</title>
+</head>
+<script src="js/jquery.js"></script>
+<script src="js/html2canvas.js"></script>
+
+<body>
+    <div class="container">
+        <form id="details">
+            <fieldset>
+                <label for="">Background Color</label>
+                <input type="color" id="color" value="#8daef3">
+            </fieldset>
+            <fieldset>
+                <label for="">Page Number</label>
+                <input type="text" id="content2" placeholder="01/05">
+            </fieldset>
+            <fieldset>
+                <label for="">Question</label>
+                <input type="text" id="title">
+            </fieldset>
+            <fieldset>
+                <label for="">Option A </label>
+                <input type="text" id="opta">
+            </fieldset>
+            <fieldset>
+                <label for="">Option B </label>
+                <input type="text" id="optb">
+            </fieldset>
+            <fieldset>
+                <label for="">Option C </label>
+                <input type="text" id="optc">
+            </fieldset>
+            <fieldset>
+                <label for="">Option D </label>
+                <input type="text" id="optd">
+            </fieldset>
+            <fieldset>
+                <label for="">Answer</label>
+                <input type="text" id="content1">
+            </fieldset>
+
+            <!-- <fieldset>
+                <label for="">Product Image</label>
+                <input type="file" id="imgInp">
+            </fieldset> -->
+            <input type="submit" value="Create Image" id="createImg">
+        </form>
+        <div class="dp"
+            style="padding: 0; border-radius: 2rem;  background-color: rgb(141, 174, 243); color: #000; width: 800px; height: 800px; font-family: 'lato','Titillium web';  padding-top: 15px;"
+            id="dp">
+
+            <img id="background" src="" style="margin-top: 650px; padding: 0; position: absolute; z-index: 5;">
+
+            <!-- <img src="img/cards_logo_full.png"
+                style="width: 350px; margin-left: 60px; padding: 0; display: block; position: absolute;"> -->
+
+            <p style="margin-left: 60px; padding: 0; display: block; position: absolute; font-family: 'Montserrat'; background-color: #999; color: #fff; padding: 8px; border-radius: 15px;"
+                id="content2Text">01/30</p>
+
+            <h1
+                style="font-size: 4rem; margin-top: 70px; margin-left: 60px; margin-bottom: 3px; font-family: 'Calibri'">
+                Quiz Review</h1>
+
+
+            <div class="content"
+                style="background-color: #fff; display: block; justify-content: space-around; position: absolute; margin-top: 40px; width:600px; height:500px; margin-left: 90px; border-radius: 1.5rem; bottom:1; left:1; z-index: 1; text-align: center; font-family: 'Montserrat';">
+
+                <!-- <img src=".png" width="200px" style="left: 0px; top: 0px; position: absolute;"> -->
+
+                <p style="font-size: 2.5rem;">
+                    Question: <br><span id="titleText"></span>
+                </p>
+                <p style="font-size: 2.0rem; margin-left: 140px; margin-top: 0px; margin-bottom: 20px;   padding-bottom: 0px; text-align: left;">
+                    A) <span id="optaText"></span>
+                </p>
+                <p style="font-size: 2.0rem; margin-left: 140px; margin-top: 0px; margin-bottom: 20px;  text-align: left;">
+                    B) <span id="optbText"></span>
+                </p>
+                <p style="font-size: 2rem; margin-left: 140px; margin-top: 0px; margin-bottom: 20px;   text-align: left;">
+                    C) <span id="optcText"></span>
+                </p>
+                <p style="font-size: 2rem; margin-left: 140px; margin-top: 0px; margin-bottom: 20px;   text-align: left;">
+                    D) <span id="optdText"></span>
+                </p>
+
+                
+            </div><div
+                    style="position:absolute; margin-top: 515px; margin-left: 400px; font-size: 1.5rem; z-index: 2;">
+                    <p style="color:#ccc" id="content1Text">Answer goes here</p>
+                </div>
+
+            <div class="bottom-logo" style="position: absolute; font-family: 'Montserrat'; margin-left: 90px; margin-top: 555px; z-index: 1; display: flex; flex-direction: row;">
+                <img src="media/image/logo.png" width="80px" alt=""> <p style="padding-top: 10px; padding-left: 5px;">PHF Ogun <br> <i style="font-size: 0.8rem;">Returning to Allah with pure heart</i></p> 
+                <h3 style="margin-left: 120px;"  >www.quiz.phfogun.org</h3>
+            </div>
+        </div>
+    </div>
+    <button id="preview">Preview DP</button>
+    <br>
+    <a id="download" href="#">Download DP</a>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
