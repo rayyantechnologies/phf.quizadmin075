@@ -1,7 +1,9 @@
 # Read and write simple Excel and CSV files
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/simple-excel.svg?style=flat-square)](https://packagist.org/packages/spatie/simple-excel)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/spatie/simple-excel/run-tests?label=tests)
+[![Build Status](https://img.shields.io/travis/spatie/simple-excel/master.svg?style=flat-square)](https://travis-ci.org/spatie/simple-excel)
+[![StyleCI](https://github.styleci.io/repos/216833389/shield?branch=master)](https://github.styleci.io/repos/216833389)
+[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/simple-excel.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/simple-excel)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/simple-excel.svg?style=flat-square)](https://packagist.org/packages/spatie/simple-excel)
 
 This package allows you to easily read and write simple Excel and CSV files. Behind the scenes generators are used to ensure low memory usage, even when working with large files.
@@ -16,14 +18,6 @@ SimpleExcelReader::create($pathToFile)->getRows()
 ```
 
 If `$pathToFile` ends with `.csv` a CSV file is assumed. If it ends with `.xlsx`, an Excel file is assumed.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/simple-excel.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/simple-excel)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
 
 ## Installation
 
@@ -51,21 +45,13 @@ $rows = SimpleExcelReader::create($pathToCsv)->getRows();
 
 $rows->each(function(array $rowProperties) {
    // in the first pass $rowProperties will contain
-   // ['email' => 'john@example.com', 'first_name' => 'john']
+   // ['email' => 'john@example', 'first_name' => 'john']
 });
 ```
 
 #### Reading an Excel file
 
 Reading an Excel file is identical to reading a CSV file. Just make sure that the path given to the `create` method of `SimpleExcelReader` ends with `xlsx`.
-
-#### Manually setting the file type
-
-You can pass the file type to the `create` method of `SimpleExcelReader` as the second, optional argument:
-
-```php
-SimpleExcelReader::create($pathToFile, 'csv');
-```
 
 #### Working with LazyCollections
 
@@ -100,109 +86,12 @@ $rows = SimpleExcelReader::create($pathToCsv)
 });
 ```
 
-#### Retrieving Header Row values
-
-If you would like to retrieve the header row as an array, you can use the `getHeaders()` method.
-
-```php
-$headers = SimpleExcelReader::create($pathToCsv)->getHeaders();
-
-// $headers will contain
-// [ 'email', 'first_name' ]
-```
-
-#### Trimming Header Row values
-
-If the file you are reading contains a title row, but you need to trim additional characters on the title values, then you should use the `trimHeaderRow()` method.
-This functionality mimics the `trim` method, and the default characters it trims, matches that function.
-
-Imagine you have a csv file with this content.
-
-```csv
-email , first_name
-john@example.com,john
-jane@example.com,jane
-```
-
-```php
-// $rows is an instance of Illuminate\Support\LazyCollection
-$rows = SimpleExcelReader::create($pathToCsv)
-    ->trimHeaderRow()
-    ->getRows()
-    ->each(function(array $rowProperties) {
-       // in the first pass $rowProperties will contain
-       // ['email' => 'john@example', 'last_name' => 'john']
-});
-```
-
-`trimHeaderRow()` additionally accepts a param to specify what characters to trim. This param can utilize the same functionality allowed by the trim function's `$characters` definition including a range of characters.
-
-#### Convert headers to snake_case
-
-If you would like all the headers to be converted to snake_case, use the the `headersToSnakeCase()` method.
-
-```csv
-Email,First Name,Last Name
-john@example.com,john,doe
-mary-jane@example.com,mary jane,doe
-```
-
-```php
-$rows = SimpleExcelReader::create($pathToCsv)
-    ->headersToSnakeCase()
-    ->getRows()
-    ->each(function(array $rowProperties) {
-        // rowProperties converted to snake_case
-        // ['email' => 'john@example', 'first_name' => 'John', 'last_name' => 'doe']
-    });
-```
-
-#### Manually formatting headers
-
-You can use a custom formatter to change the headers using the `formatHeadersUsing` method and passing a closure.
-
-```csv
-email,first_name,last_name
-john@example.com,john,doe
-mary-jane@example.com,mary jane,doe
-```
-
-```php
-$rows = SimpleExcelReader::create($pathToCsv)
-    ->formatHeadersUsing(fn($header) => "{$header}_simple_excel")
-    ->getRows()
-    ->each(function(array $rowProperties) {
-        // ['email_simple_excel' => 'john@example', 'first_name_simple_excel' => 'John', 'last_name_simple_excel' => 'doe']
-    });
-```
-
 #### Manually working with the reader object
 
 Under the hood this package uses the [box/spout](https://github.com/box/spout) package. You can get to the underlying reader that implements `\Box\Spout\Reader\ReaderInterface` by calling the `getReader` method.
 
 ```php
 $reader = SimpleExcelReader::create($pathToCsv)->getReader();
-```
-
-#### Limiting the result set
-
-The `take` method allows you to specify a limit on how many rows should be returned.
-
-```php
-// $rows is an instance of Illuminate\Support\LazyCollection
-$rows = SimpleExcelReader::create($pathToCsv)
-    ->take(5)
-    ->getRows();
-```
-
-The `skip` method allows you to define which row to start reading data from. In this example we get rows 11 to 16.
-
-
-```php
-$rows = SimpleExcelReader::create($pathToCsv)
-    ->skip(10)
-    ->take(5)
-    ->getRows();
 ```
 
 ### Writing files
@@ -233,14 +122,6 @@ Jane,Doe
 
 Writing an Excel file is identical to writing a csv. Just make sure that the path given to the `create` method of `SimpleExcelWriter` ends with `xlsx`.
 
-#### Manually setting the file type
-
-You can pass the file type to the `create` method of `SimpleExcelWriter` as the second, optional argument:
-
-```php
-SimpleExcelWriter::create('php://output', 'csv');
-```
-
 #### Streaming an Excel file to the browser
 
 Instead of writing a file to disk, you can stream it directly to the browser.
@@ -256,24 +137,6 @@ $writer = SimpleExcelWriter::streamDownload('your-export.xlsx')
         'last_name' => 'Doe',
     ])
     ->toBrowser();
-```
-
-### Writing multiple rows at once
-
-You can use `addRows` instead of `addRow` to add multiple rows at once.
-
-```php
-$writer = SimpleExcelWriter::streamDownload('your-export.xlsx')
-     ->addRows([
-        [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-        ],
-        [
-            'first_name' => 'Jane',
-            'last_name' => 'Doe',
-        ],
-    ]);
 ```
 
 #### Writing a file without titles
@@ -314,11 +177,6 @@ $style = (new StyleBuilder())
 
 $writer->addRow(['values, 'of', 'the', 'row'], $style)
 ```
-To style your HeaderRow simply call the `setHeaderStyle($style)` Method.
-
-```php
-$writer->setHeaderStyle($style);
-```
 
 For more information on styles head over to [the Spout docs](https://opensource.box.com/spout/docs/#styling).
 
@@ -346,18 +204,6 @@ $writerWithAutomaticHeader = SimpleExcelWriter::create($this->pathToCsv)
 $writerWithoutAutomaticHeader->getNumberOfRows() // returns 2
 ```
 
-#### Disable BOM
-
-You can also disable adding a BOM to the start of the file. BOM must be disabled on create and cannot be disabled after creation of the writer.
-
-A BOM, or byte order mark, indicates a number of things for the file being written including the file being unicode as well as it's UTF encoding type.
-
-```php
-SimpleExcelWriter::createWithoutBom($this->pathToCsv, $type);
-```
-
-Additional information about BOM can be found [here](https://en.wikipedia.org/wiki/Byte_order_mark).
-
 #### Manually working with the writer object
 
 Under the hood this package uses the [box/spout](https://github.com/box/spout) package. You can get to the underlying writer that implements `\Box\Spout\Reader\WriterInterface` by calling the `getWriter` method.
@@ -365,6 +211,7 @@ Under the hood this package uses the [box/spout](https://github.com/box/spout) p
 ```php
 $writer = SimpleExcelWriter::create($pathToCsv)->getWriter();
 ```
+
 
 ### Testing
 
@@ -388,7 +235,7 @@ If you discover any security related issues, please email freek@spatie.be instea
 
 You're free to use this package, but if it makes it to your production environment we highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using.
 
-Our address is: Spatie, Kruikstraat 22, 2018 Antwerp, Belgium.
+Our address is: Spatie, Samberstraat 69D, 2060 Antwerp, Belgium.
 
 We publish all received postcards [on our company website](https://spatie.be/en/opensource/postcards).
 
@@ -396,6 +243,13 @@ We publish all received postcards [on our company website](https://spatie.be/en/
 
 - [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)
+
+## Support us
+
+Spatie is a webdesign agency based in Antwerp, Belgium. You'll find an overview of all our open source projects [on our website](https://spatie.be/opensource).
+
+Does your business depend on our contributions? Reach out and support us on [Patreon](https://www.patreon.com/spatie). 
+All pledges will be dedicated to allocating workforce on maintenance and new awesome stuff.
 
 ## Alternatives
 

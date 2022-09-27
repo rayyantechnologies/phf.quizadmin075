@@ -4,54 +4,32 @@ namespace Spatie\SimpleExcel;
 
 use Box\Spout\Common\Entity\Row;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
-use Box\Spout\Reader\Common\Creator\ReaderFactory;
-use Box\Spout\Reader\IteratorInterface;
 use Box\Spout\Reader\ReaderInterface;
-use Closure;
 use Illuminate\Support\LazyCollection;
 
 class SimpleExcelReader
 {
-    protected string $path;
+    /** @var string */
+    private $path;
 
-    protected string $type;
+    /** @var \Box\Spout\Reader\ReaderInterface */
+    private $reader;
 
-    protected ReaderInterface $reader;
+    /** @var \Box\Spout\Reader\IteratorInterface */
+    private $rowIterator;
 
-    protected IteratorInterface $rowIterator;
+    private $processHeader = true;
 
-    protected bool $processHeader = true;
-
-    protected bool $trimHeader = false;
-
-    protected bool $headersToSnakeCase = false;
-
-    protected ?string $trimHeaderCharacters = null;
-
-    protected ?Closure $formatHeadersUsing = null;
-
-    protected ?array $headers = null;
-
-    protected int $skip = 0;
-
-    protected int $limit = 0;
-
-    protected bool $useLimit = false;
-
-    public static function create(string $file, string $type = '')
+    public static function create(string $file)
     {
-        return new static($file, $type);
+        return new static($file);
     }
 
-    public function __construct(string $path, string $type = '')
+    public function __construct(string $path)
     {
         $this->path = $path;
 
-        $this->type = $type;
-
-        $this->reader = $type ?
-            ReaderFactory::createFromType($type) :
-            ReaderEntityFactory::createReaderFromFile($this->path);
+        $this->reader = ReaderEntityFactory::createReaderFromFile($this->path);
     }
 
     public function getPath(): string
@@ -59,45 +37,23 @@ class SimpleExcelReader
         return $this->path;
     }
 
-    public function noHeaderRow(): self
+    public function noHeaderRow()
     {
         $this->processHeader = false;
 
         return $this;
     }
 
-    public function useDelimiter(string $delimiter): self
+    public function useDelimiter(string $delimiter)
     {
         $this->reader->setFieldDelimiter($delimiter);
 
         return $this;
     }
 
-    public function useFieldEnclosure(string $fieldEnclosure): self
+    public function useFieldEnclosure(string $fieldEnclosure)
     {
         $this->reader->setFieldEnclosure($fieldEnclosure);
-
-        return $this;
-    }
-
-    public function trimHeaderRow(string $characters = null): self
-    {
-        $this->trimHeader = true;
-        $this->trimHeaderCharacters = $characters;
-
-        return $this;
-    }
-
-    public function formatHeadersUsing(callable $callback): self
-    {
-        $this->formatHeadersUsing = $callback;
-
-        return $this;
-    }
-
-    public function headersToSnakeCase(): self
-    {
-        $this->headersToSnakeCase = true;
 
         return $this;
     }
@@ -105,21 +61,6 @@ class SimpleExcelReader
     public function getReader(): ReaderInterface
     {
         return $this->reader;
-    }
-
-    public function skip(int $count): SimpleExcelReader
-    {
-        $this->skip = $count;
-
-        return $this;
-    }
-
-    public function take(int $count): SimpleExcelReader
-    {
-        $this->limit = $count;
-        $this->useLimit = true;
-
-        return $this;
     }
 
     public function getRows(): LazyCollection
@@ -142,16 +83,12 @@ class SimpleExcelReader
         }
 
         if ($this->processHeader) {
-            $this->headers = $this->processHeaderRow($firstRow->toArray());
-
+            $this->headers = $firstRow->toArray();
             $this->rowIterator->next();
         }
 
         return LazyCollection::make(function () {
-            while ($this->rowIterator->valid() && $this->skip && $this->skip--) {
-                $this->rowIterator->next();
-            }
-            while ($this->rowIterator->valid() && (! $this->useLimit || $this->limit--)) {
+            while ($this->rowIterator->valid()) {
                 $row = $this->rowIterator->current();
 
                 yield $this->getValueFromRow($row);
@@ -161,106 +98,24 @@ class SimpleExcelReader
         });
     }
 
-    public function getHeaders(): ?array
-    {
-        if (! $this->processHeader) {
-            return null;
-        }
-
-        if ($this->headers) {
-            return $this->headers;
-        }
-
-        $this->reader->open($this->path);
-
-        $this->reader->getSheetIterator()->rewind();
-
-        $sheet = $this->reader->getSheetIterator()->current();
-
-        $this->rowIterator = $sheet->getRowIterator();
-
-        $this->rowIterator->rewind();
-
-        /** @var \Box\Spout\Common\Entity\Row $firstRow */
-        $firstRow = $this->rowIterator->current();
-
-        if (is_null($firstRow)) {
-            $this->noHeaderRow();
-
-            return null;
-        }
-
-        $this->headers = $this->processHeaderRow($firstRow->toArray());
-
-        return $this->headers;
-    }
-
-    public function close()
-    {
-        $this->reader->close();
-    }
-
-    protected function processHeaderRow(array $headers): array
-    {
-        if ($this->trimHeader) {
-            $headers = $this->convertHeaders([$this, 'trim'], $headers);
-        }
-
-        if ($this->headersToSnakeCase) {
-            $headers = $this->convertHeaders([$this, 'toSnakecase'], $headers);
-        }
-
-        if ($this->formatHeadersUsing) {
-            $headers = $this->convertHeaders($this->formatHeadersUsing, $headers);
-        }
-
-        return $headers;
-    }
-
-    protected function convertHeaders(callable $callback, array $headers): array
-    {
-        return array_map(function ($header) use ($callback) {
-            return call_user_func($callback, $header);
-        }, $headers);
-    }
-
-    public function headerRowFormatter(callable $callback)
-    {
-        $this->headerRowFormatter = $callback;
-
-        return $this;
-    }
-
-    protected function trim(string $header): string
-    {
-        return call_user_func_array('trim', array_filter([$header, $this->trimHeaderCharacters]));
-    }
-
-    protected function toSnakeCase(string $header): string
-    {
-        return str_replace(
-            ' ',
-            '_',
-            strtolower(preg_replace('/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/', '_', trim($header)))
-        );
-    }
-
     protected function getValueFromRow(Row $row): array
     {
-        $values = $row->toArray();
-        ksort($values);
-
         if (! $this->processHeader) {
-            return $values;
+            return $row->toArray();
         }
 
-        $values = array_slice($values, 0, count($this->headers));
+        $values = array_slice($row->toArray(), 0, count($this->headers));
 
         while (count($values) < count($this->headers)) {
             $values[] = '';
         }
 
         return array_combine($this->headers, $values);
+    }
+
+    public function close()
+    {
+        $this->reader->close();
     }
 
     public function __destruct()

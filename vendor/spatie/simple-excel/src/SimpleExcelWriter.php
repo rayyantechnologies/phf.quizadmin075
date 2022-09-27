@@ -8,60 +8,40 @@ use Box\Spout\Writer\WriterInterface;
 
 class SimpleExcelWriter
 {
-    private WriterInterface $writer;
+    /** @var \Box\Spout\Writer\WriterInterface */
+    private $writer;
 
-    private string $path = '';
+    private $path = '';
 
-    private bool $processHeader = true;
+    private $processHeader = true;
 
-    private bool $processingFirstRow = true;
+    private $processingFirstRow = true;
 
-    private int $numberOfRows = 0;
+    private $numberOfRows = 0;
 
-    private $headerStyle = null;
-
-    public static function create(string $file, string $type = '', callable $configureWriter = null)
+    public static function create(string $file)
     {
-        $simpleExcelWriter = new static($file, $type);
+        $simpleExcelWriter = new static($file);
 
-        $writer = $simpleExcelWriter->getWriter();
-
-        if ($configureWriter) {
-            $configureWriter($writer);
-        }
-
-        $writer->openToFile($file);
+        $simpleExcelWriter->getWriter()->openToFile($file);
 
         return $simpleExcelWriter;
     }
 
-    public static function createWithoutBom(string $file, string $type = '')
+    public static function streamDownload(string $downloadName)
     {
-        return static::create($file, $type, fn ($writer) => $writer->setShouldAddBOM(false));
-    }
+        $simpleExcelWriter = new static($downloadName);
 
-    public static function streamDownload(string $downloadName, string $type = '', callable $writerCallback = null)
-    {
-        $simpleExcelWriter = new static($downloadName, $type);
-
-        $writer = $simpleExcelWriter->getWriter();
-
-        if ($writerCallback) {
-            $writerCallback($writer);
-        }
-
-        $writer->openToBrowser($downloadName);
+        $simpleExcelWriter->getWriter()->openToBrowser($downloadName);
 
         return $simpleExcelWriter;
     }
 
-    protected function __construct(string $path, string $type = '')
+    protected function __construct(string $path)
     {
+        $this->writer = WriterEntityFactory::createWriterFromFile($path);
+
         $this->path = $path;
-
-        $this->writer = $type ?
-            WriterEntityFactory::createWriter($type) :
-            WriterEntityFactory::createWriterFromFile($this->path);
     }
 
     public function getPath(): string
@@ -82,16 +62,6 @@ class SimpleExcelWriter
     public function noHeaderRow()
     {
         $this->processHeader = false;
-
-        return $this;
-    }
-
-    /**
-     *  @param \Box\Spout\Common\Entity\Style\Style $style
-     */
-    public function setHeaderStyle($style)
-    {
-        $this->headerStyle = $style;
 
         return $this;
     }
@@ -118,20 +88,11 @@ class SimpleExcelWriter
         return $this;
     }
 
-    public function addRows(iterable $rows)
-    {
-        foreach ($rows as $row) {
-            $this->addRow($row);
-        }
-
-        return $this;
-    }
-
     protected function writeHeaderFromRow(array $row)
     {
         $headerValues = array_keys($row);
 
-        $headerRow = WriterEntityFactory::createRowFromArray($headerValues, $this->headerStyle);
+        $headerRow = WriterEntityFactory::createRowFromArray($headerValues);
 
         $this->writer->addRow($headerRow);
         $this->numberOfRows++;
@@ -147,13 +108,6 @@ class SimpleExcelWriter
     public function close()
     {
         $this->writer->close();
-    }
-
-    public function useDelimiter(string $delimiter): self
-    {
-        $this->writer->setFieldDelimiter($delimiter);
-
-        return $this;
     }
 
     public function __destruct()
