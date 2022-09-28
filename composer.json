@@ -1,29 +1,5 @@
 {
-	"name": "codeigniter4/framework",
-	"type": "project",
-	"description": "The CodeIgniter framework v4",
-	"homepage": "https://codeigniter.com",
-	"license": "MIT",
-	"require": {
-		"spatie/simple-excel": "1.2.3"
-	},
-	"require-dev": {
-	},
-	"autoload": {
-		"psr-4": {
-			"CodeIgniter\\": "system/"
-		}
-	},
-	"scripts": {
-		"post-update-cmd": [
-			"@composer dump-autoload",
-			"CodeIgniter\\ComposerScripts::postUpdate"
-		],
-		"test": "phpunit"
-	},
-	"support": {
-		"forum": "http://forum.codeigniter.com/",
-		"source": "https://github.com/codeigniter4/CodeIgniter4",
-		"slack": "https://codeigniterchat.slack.com"
-	}
+    "require": {
+        "goodby/csv": "*"
+    }
 }

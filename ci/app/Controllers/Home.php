@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Controllers;
-use Spatie\SimpleExcel\SimpleExcelReader;
+    use Goodby\CSV\Import\Standard\Lexer;
+    use Goodby\CSV\Import\Standard\Interpreter;
+    use Goodby\CSV\Import\Standard\LexerConfig;
 
 
 class Home extends BaseController
@@ -255,7 +257,9 @@ class Home extends BaseController
         if ($session->logged_in == TRUE) {
             $incoming = $this->request->getPost();
             $file = $this->request->getFile('quiz')->store();
+
             $rows = $this->reader($file);
+            // var_dump($rows);
             // foreach ($rows as $key => $row) {
             //     var_dump($row);
             //    }
@@ -361,10 +365,29 @@ class Home extends BaseController
 	}
 
     private function reader($file){
-        $rows = SimpleExcelReader::create(WRITEPATH . 'uploads/'.$file)
-        ->noHeaderRow(['q', 'oa','ob','oc','od','a'])
-        ->getRows();
+
+        $rows = array();
+
+        $config = new LexerConfig();
+        $lexer = new Lexer($config);
+
+        $interpreter = new Interpreter();
+
+        $interpreter->addObserver(function(array $row) use(&$rows){
+             $rows[] = $row;
+        });
+
+        $lexer->parse(WRITEPATH . 'uploads/'.$file, $interpreter);
+
+
+
+        // $rows = SimpleExcelReader::create(WRITEPATH . 'uploads/'.$file)
+        // ->noHeaderRow(['q', 'oa','ob','oc','od','a'])
+        // ->getRows();
+            // var_dump($rows);
+
         return $rows;
+
     }
 
     public function testss()
