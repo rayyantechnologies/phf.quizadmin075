@@ -468,7 +468,7 @@ class Home extends BaseController
 	public function mailer(array $data)
 	{
 		$email = \Config\Services::email();
-		$email->setFrom('quiz@phfogun.org', 'PHF Quiz Master');
+		$email->setFrom('quiz@phfogun.org.ng', 'PHF Quiz Master');
 		$email->setTo($data['to']);
 		// $email->setCC('another@another-example.com');
 		// $email->setBCC('them@their-example.com');
