@@ -444,7 +444,7 @@ class Home extends BaseController
 					'to' => $db[0]['email'],
 					'type' => 'link',
 					'subject' => 'Score Released - PHF Ogun Quiz',
-					'message' => ['p1' => 'Your score has been released for PHF Ogun Monthly Quiz', 'p2'=>'Your Score is '.$rs['score'].'/15.', 'p3' => 'Do join us next Month for another exciting edition.', 'link'=>'https://quiz.phfogun.org/solution/'.$coo.'', 'linktext'=>'Click here for answers to the questions'],
+					'message' => ['p1' => 'Your score has been released for PHF Ogun Monthly Quiz', 'p2'=>'Your Score is '.$rs['score'].'/15.', 'p3' => 'Do join us next Month for another exciting edition.', 'link'=>'https://quiz.phfogun.org.ng/solution/'.$coo.'', 'linktext'=>'Click here for answers to the questions'],
 					'response' => [
 						'title' => 'Scores Sent',
 						'msg' => 'All scores has been sent out to the provided email',
